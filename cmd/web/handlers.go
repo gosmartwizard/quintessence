@@ -9,7 +9,7 @@ import (
 
 func (app *application) HomeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 
@@ -17,15 +17,13 @@ func (app *application) HomeHandler(w http.ResponseWriter, r *http.Request) {
 		"./ui/html/partials/nav.tmpl",
 		"./ui/html/pages/home.tmpl")
 	if err != nil {
-		app.errorLog.Print(err.Error())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		app.serverError(w, err)
 		return
 	}
 
 	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
-		app.errorLog.Print(err.Error())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		app.serverError(w, err)
 	}
 }
 
@@ -42,13 +40,13 @@ func (app *application) QuintCreateHandler(w http.ResponseWriter, r *http.Reques
 func (app *application) QuintGetHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", http.MethodGet)
-		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
+		app.clientError(w, "Method not supported", http.StatusNotFound)
 		return
 	}
 
 	sid := r.URL.Query().Get("id")
 	if sid == "" {
-		http.Error(w, "Empty Id", http.StatusBadRequest)
+		app.clientError(w, "There is no id in the query", http.StatusBadRequest)
 		return
 	}
 	qid, err := strconv.Atoi(sid)
@@ -58,7 +56,7 @@ func (app *application) QuintGetHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	} else if qid < 0 {
 		msg := fmt.Sprintf("Not a valid ID : %d ", qid)
-		http.Error(w, msg, http.StatusBadRequest)
+		app.clientError(w, msg, http.StatusBadRequest)
 		return
 	}
 
@@ -68,7 +66,7 @@ func (app *application) QuintGetHandler(w http.ResponseWriter, r *http.Request) 
 func (app *application) QuintDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		w.Header().Set("Allow", http.MethodDelete)
-		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
+		app.clientError(w, "Method not supported", http.StatusNotFound)
 		return
 	}
 	w.Write([]byte("Successfully deleted a quint"))
@@ -77,7 +75,7 @@ func (app *application) QuintDeleteHandler(w http.ResponseWriter, r *http.Reques
 func (app *application) QuintListHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", http.MethodGet)
-		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
+		app.clientError(w, "Method not supported", http.StatusNotFound)
 		return
 	}
 	w.Write([]byte("Successfully list a quint"))
@@ -86,7 +84,7 @@ func (app *application) QuintListHandler(w http.ResponseWriter, r *http.Request)
 func (app *application) QuintUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		w.Header().Set("Allow", http.MethodPut)
-		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
+		app.clientError(w, "Method not supported", http.StatusNotFound)
 		return
 	}
 	w.Write([]byte("Successfully updated a quint"))
