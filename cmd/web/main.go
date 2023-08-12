@@ -8,6 +8,10 @@ import (
 func main() {
 	mux := http.NewServeMux()
 
+	fileserver := http.FileServer(http.Dir("./ui/static/"))
+
+	mux.Handle("/static/", http.StripPrefix("/static", fileserver))
+
 	mux.HandleFunc("/", HomeHandler)
 
 	mux.HandleFunc("/quint/create", QuintCreateHandler)
