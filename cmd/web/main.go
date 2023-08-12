@@ -15,6 +15,7 @@ type config struct {
 type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
+	config
 }
 
 func main() {
@@ -33,26 +34,13 @@ func main() {
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
+		config:   cfg,
 	}
 
-	mux := http.NewServeMux()
-
-	fileserver := http.FileServer(http.Dir(cfg.staticDir))
-
-	mux.Handle("/static/", http.StripPrefix("/static", fileserver))
-
-	mux.HandleFunc("/", app.HomeHandler)
-
-	mux.HandleFunc("/quint/create", app.QuintCreateHandler)
-	mux.HandleFunc("/quint/update", app.QuintUpdateHandler)
-	mux.HandleFunc("/quint/delete", app.QuintDeleteHandler)
-	mux.HandleFunc("/quint/list", app.QuintListHandler)
-	mux.HandleFunc("/quint/get", app.QuintGetHandler)
-
 	server := &http.Server{
-		Addr:     cfg.address,
+		Addr:     app.address,
 		ErrorLog: errorLog,
-		Handler:  mux,
+		Handler:  app.routes(),
 	}
 
 	infoLog.Printf("Server listening on port %s", cfg.address)
