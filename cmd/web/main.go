@@ -12,6 +12,11 @@ type config struct {
 	staticDir string
 }
 
+type application struct {
+	errorLog *log.Logger
+	infoLog  *log.Logger
+}
+
 func main() {
 
 	var cfg config
@@ -25,19 +30,24 @@ func main() {
 
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Llongfile)
 
+	app := &application{
+		errorLog: errorLog,
+		infoLog:  infoLog,
+	}
+
 	mux := http.NewServeMux()
 
 	fileserver := http.FileServer(http.Dir(cfg.staticDir))
 
 	mux.Handle("/static/", http.StripPrefix("/static", fileserver))
 
-	mux.HandleFunc("/", HomeHandler)
+	mux.HandleFunc("/", app.HomeHandler)
 
-	mux.HandleFunc("/quint/create", QuintCreateHandler)
-	mux.HandleFunc("/quint/update", QuintUpdateHandler)
-	mux.HandleFunc("/quint/delete", QuintDeleteHandler)
-	mux.HandleFunc("/quint/list", QuintListHandler)
-	mux.HandleFunc("/quint/get", QuintGetHandler)
+	mux.HandleFunc("/quint/create", app.QuintCreateHandler)
+	mux.HandleFunc("/quint/update", app.QuintUpdateHandler)
+	mux.HandleFunc("/quint/delete", app.QuintDeleteHandler)
+	mux.HandleFunc("/quint/list", app.QuintListHandler)
+	mux.HandleFunc("/quint/get", app.QuintGetHandler)
 
 	server := &http.Server{
 		Addr:     cfg.address,
