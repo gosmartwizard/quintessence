@@ -1,7 +1,21 @@
 package main
 
-import "fmt"
+import (
+	"log"
+	"net/http"
+)
+
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Welcome to the home page"))
+}
 
 func main() {
-	fmt.Println("Welcome to the Quintessence Project")
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", HomeHandler)
+
+	log.Print("Server listening on port : 4949 ")
+
+	err := http.ListenAndServe(":4949", mux)
+	log.Fatal(err)
 }
