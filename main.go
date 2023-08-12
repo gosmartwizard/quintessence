@@ -15,22 +15,49 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func QuintCreateHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.Header().Set("Allow", http.MethodPost)
+		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	w.Write([]byte("Successfully created a new quint"))
 }
 
 func QuintGetHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", http.MethodGet)
+		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	w.Write([]byte("Successfully retrieved a quint"))
 }
 
 func QuintDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		w.Header().Set("Allow", http.MethodDelete)
+		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	w.Write([]byte("Successfully deleted a quint"))
 }
 
 func QuintListHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.Header().Set("Allow", http.MethodGet)
+		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	w.Write([]byte("Successfully list a quint"))
 }
 
 func QuintUpdateHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPut {
+		w.Header().Set("Allow", http.MethodPut)
+		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	w.Write([]byte("Successfully updated a quint"))
 }
 
