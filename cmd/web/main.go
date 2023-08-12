@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 )
 
 type config struct {
@@ -20,6 +21,10 @@ func main() {
 
 	flag.Parse()
 
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime|log.Lshortfile)
+
+	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Llongfile)
+
 	mux := http.NewServeMux()
 
 	fileserver := http.FileServer(http.Dir(cfg.staticDir))
@@ -34,8 +39,14 @@ func main() {
 	mux.HandleFunc("/quint/list", QuintListHandler)
 	mux.HandleFunc("/quint/get", QuintGetHandler)
 
-	log.Printf("Server listening on port %s", cfg.address)
+	server := &http.Server{
+		Addr:     cfg.address,
+		ErrorLog: errorLog,
+		Handler:  mux,
+	}
 
-	err := http.ListenAndServe(cfg.address, mux)
-	log.Fatal(err)
+	infoLog.Printf("Server listening on port %s", cfg.address)
+
+	err := server.ListenAndServe()
+	errorLog.Fatal(err)
 }
