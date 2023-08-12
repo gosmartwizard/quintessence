@@ -1,14 +1,28 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 )
 
+type config struct {
+	address   string
+	staticDir string
+}
+
 func main() {
+
+	var cfg config
+
+	flag.StringVar(&cfg.address, "address", ":4949", "HTTP address to connect to")
+	flag.StringVar(&cfg.staticDir, "static-directory", "./ui/static", "Path to static directory")
+
+	flag.Parse()
+
 	mux := http.NewServeMux()
 
-	fileserver := http.FileServer(http.Dir("./ui/static/"))
+	fileserver := http.FileServer(http.Dir(cfg.staticDir))
 
 	mux.Handle("/static/", http.StripPrefix("/static", fileserver))
 
@@ -20,8 +34,8 @@ func main() {
 	mux.HandleFunc("/quint/list", QuintListHandler)
 	mux.HandleFunc("/quint/get", QuintGetHandler)
 
-	log.Print("Server listening on port : 4949 ")
+	log.Printf("Server listening on port %s", cfg.address)
 
-	err := http.ListenAndServe(":4949", mux)
+	err := http.ListenAndServe(cfg.address, mux)
 	log.Fatal(err)
 }
