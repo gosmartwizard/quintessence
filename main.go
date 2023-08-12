@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +33,23 @@ func QuintGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte("Successfully retrieved a quint"))
+	sid := r.URL.Query().Get("id")
+	if sid == "" {
+		http.Error(w, "Empty Id", http.StatusBadRequest)
+		return
+	}
+	qid, err := strconv.Atoi(sid)
+	if err != nil {
+		msg := fmt.Sprintf("Failed to convert ID : %v ", sid)
+		http.Error(w, msg, http.StatusInternalServerError)
+		return
+	} else if qid < 0 {
+		msg := fmt.Sprintf("Not a valid ID : %d ", qid)
+		http.Error(w, msg, http.StatusBadRequest)
+		return
+	}
+
+	fmt.Fprintf(w, "Successfully retrieved a quint %d", qid)
 }
 
 func QuintDeleteHandler(w http.ResponseWriter, r *http.Request) {
