@@ -3,12 +3,11 @@ package main
 import (
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"strconv"
 )
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) HomeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
@@ -18,19 +17,19 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		"./ui/html/partials/nav.tmpl",
 		"./ui/html/pages/home.tmpl")
 	if err != nil {
-		log.Print(err.Error())
+		app.errorLog.Print(err.Error())
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
-		log.Print(err.Error())
+		app.errorLog.Print(err.Error())
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
 }
 
-func QuintCreateHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) QuintCreateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", http.MethodPost)
 		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
@@ -40,7 +39,7 @@ func QuintCreateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Successfully created a new quint"))
 }
 
-func QuintGetHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) QuintGetHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", http.MethodGet)
 		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
@@ -66,7 +65,7 @@ func QuintGetHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Successfully retrieved a quint %d", qid)
 }
 
-func QuintDeleteHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) QuintDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		w.Header().Set("Allow", http.MethodDelete)
 		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
@@ -75,7 +74,7 @@ func QuintDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Successfully deleted a quint"))
 }
 
-func QuintListHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) QuintListHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", http.MethodGet)
 		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
@@ -84,7 +83,7 @@ func QuintListHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Successfully list a quint"))
 }
 
-func QuintUpdateHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) QuintUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		w.Header().Set("Allow", http.MethodPut)
 		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
