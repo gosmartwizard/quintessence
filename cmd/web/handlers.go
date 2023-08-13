@@ -34,15 +34,26 @@ func (app *application) QuintCreateHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	w.Write([]byte("Successfully created a new quint"))
+	title := "GO Interfaces"
+	content := "An interface in Go is a type defined using a set of method signatures. The interface defines the behavior of a similar type of object"
+	expires := 7
+
+	id, err := app.quints.Insert(title, content, expires)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/quint/get?id=%d", id), http.StatusSeeOther)
 }
 
 func (app *application) QuintGetHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+
+	/* 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", http.MethodGet)
 		app.clientError(w, "Method not supported", http.StatusNotFound)
 		return
-	}
+	} */
 
 	sid := r.URL.Query().Get("id")
 	if sid == "" {
