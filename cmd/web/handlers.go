@@ -1,10 +1,13 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
+
+	"github.com/gosmartwizard/quintessence/internal/models"
 )
 
 func (app *application) HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -71,7 +74,17 @@ func (app *application) QuintGetHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	fmt.Fprintf(w, "Successfully retrieved a quint %d", qid)
+	quint, err := app.quints.Get(qid)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	fmt.Fprintf(w, "%+v", quint)
 }
 
 func (app *application) QuintDeleteHandler(w http.ResponseWriter, r *http.Request) {
