@@ -8,6 +8,7 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gosmartwizard/quintessence/internal/models"
 )
 
 type config struct {
@@ -20,6 +21,7 @@ type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
 	config
+	quints *models.QuintModel
 }
 
 func main() {
@@ -48,6 +50,7 @@ func main() {
 		errorLog: errorLog,
 		infoLog:  infoLog,
 		config:   cfg,
+		quints:   &models.QuintModel{DB: db},
 	}
 
 	server := &http.Server{
