@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"strconv"
 
@@ -16,7 +15,17 @@ func (app *application) HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ts, err := template.ParseFiles("./ui/html/base.tmpl",
+	quints, err := app.quints.Latest()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	for _, quint := range quints {
+		fmt.Fprintf(w, "%+v\n", quint)
+	}
+
+	/* ts, err := template.ParseFiles("./ui/html/base.tmpl",
 		"./ui/html/partials/nav.tmpl",
 		"./ui/html/pages/home.tmpl")
 	if err != nil {
@@ -27,7 +36,7 @@ func (app *application) HomeHandler(w http.ResponseWriter, r *http.Request) {
 	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
 		app.serverError(w, err)
-	}
+	} */
 }
 
 func (app *application) QuintCreateHandler(w http.ResponseWriter, r *http.Request) {
@@ -102,7 +111,15 @@ func (app *application) QuintListHandler(w http.ResponseWriter, r *http.Request)
 		app.clientError(w, "Method not supported", http.StatusNotFound)
 		return
 	}
-	w.Write([]byte("Successfully list a quint"))
+	quints, err := app.quints.Latest()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	for _, quint := range quints {
+		fmt.Fprintf(w, "%+v\n", quint)
+	}
 }
 
 func (app *application) QuintUpdateHandler(w http.ResponseWriter, r *http.Request) {

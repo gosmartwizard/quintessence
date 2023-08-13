@@ -57,5 +57,33 @@ func (m *QuintModel) Get(id int) (*Quint, error) {
 }
 
 func (m *QuintModel) Latest() ([]*Quint, error) {
-	return nil, nil
+	stmt := `SELECT id, title, content, created, expires FROM quints
+			WHERE expires > UTC_TIMESTAMP() ORDER BY id DESC LIMIT 10`
+
+	rows, err := m.DB.Query(stmt)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	quints := []*Quint{}
+
+	for rows.Next() {
+
+		s := &Quint{}
+
+		err = rows.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+		if err != nil {
+			return nil, err
+		}
+
+		quints = append(quints, s)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return quints, nil
 }
