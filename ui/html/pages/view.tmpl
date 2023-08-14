@@ -1,0 +1,18 @@
+
+{{define "title"}}
+Quint #{{.Quint.ID}}
+{{end}}
+
+{{define "main"}}
+    <div class='quint'>
+        <div class='metadata'>
+            <strong>{{.Quint.Title}}</strong>
+            <span>#{{.Quint.ID}}</span>
+        </div>
+        <pre><code>{{.Quint.Content}}</code></pre>
+        <div class='metadata'>
+            <time>Created: {{.Quint.Created}}</time>
+            <time>Expires: {{.Quint.Expires}}</time>
+        </div>
+    </div>
+{{end}}
