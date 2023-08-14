@@ -22,22 +22,26 @@ func (app *application) HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, quint := range quints {
-		fmt.Fprintf(w, "%+v\n", quint)
+	files := []string{
+		"./ui/html/base.tmpl",
+		"./ui/html/partials/nav.tmpl",
+		"./ui/html/pages/home.tmpl",
 	}
 
-	/* ts, err := template.ParseFiles("./ui/html/base.tmpl",
-		"./ui/html/partials/nav.tmpl",
-		"./ui/html/pages/home.tmpl")
+	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	err = ts.ExecuteTemplate(w, "base", nil)
+	data := &templateData{
+		Quints: quints,
+	}
+
+	err = ts.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		app.serverError(w, err)
-	} */
+	}
 }
 
 func (app *application) QuintCreateHandler(w http.ResponseWriter, r *http.Request) {
