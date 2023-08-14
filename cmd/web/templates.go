@@ -3,5 +3,6 @@ package main
 import "github.com/gosmartwizard/quintessence/internal/models"
 
 type templateData struct {
-	Quint *models.Quint
+	Quint  *models.Quint
+	Quints []*models.Quint
 }
