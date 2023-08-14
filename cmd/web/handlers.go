@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strconv"
 
@@ -46,8 +47,8 @@ func (app *application) QuintCreateHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	title := "GO Interfaces"
-	content := "An interface in Go is a type defined using a set of method signatures. The interface defines the behavior of a similar type of object"
+	title := "Qunitessence"
+	content := "Most perfect or typical example of a quality or class"
 	expires := 7
 
 	id, err := app.quints.Insert(title, content, expires)
@@ -60,12 +61,6 @@ func (app *application) QuintCreateHandler(w http.ResponseWriter, r *http.Reques
 }
 
 func (app *application) QuintGetHandler(w http.ResponseWriter, r *http.Request) {
-
-	/* 	if r.Method != http.MethodGet {
-		w.Header().Set("Allow", http.MethodGet)
-		app.clientError(w, "Method not supported", http.StatusNotFound)
-		return
-	} */
 
 	sid := r.URL.Query().Get("id")
 	if sid == "" {
@@ -93,7 +88,26 @@ func (app *application) QuintGetHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	fmt.Fprintf(w, "%+v", quint)
+	files := []string{
+		"./ui/html/base.tmpl",
+		"./ui/html/partials/nav.tmpl",
+		"./ui/html/pages/view.tmpl",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	data := &templateData{
+		Quint: quint,
+	}
+
+	err = ts.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		app.serverError(w, err)
+	}
 }
 
 func (app *application) QuintDeleteHandler(w http.ResponseWriter, r *http.Request) {
