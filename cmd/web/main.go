@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -21,7 +22,8 @@ type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
 	config
-	quints *models.QuintModel
+	quints        *models.QuintModel
+	templateCache map[string]*template.Template
 }
 
 func main() {
@@ -46,11 +48,17 @@ func main() {
 
 	defer db.Close()
 
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+
 	app := &application{
-		errorLog: errorLog,
-		infoLog:  infoLog,
-		config:   cfg,
-		quints:   &models.QuintModel{DB: db},
+		errorLog:      errorLog,
+		infoLog:       infoLog,
+		config:        cfg,
+		quints:        &models.QuintModel{DB: db},
+		templateCache: templateCache,
 	}
 
 	server := &http.Server{
