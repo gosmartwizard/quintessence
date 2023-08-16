@@ -21,9 +21,10 @@ func (app *application) HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w, http.StatusOK, "home.tmpl", &templateData{
-		Quints: quints,
-	})
+	data := app.newTemplateData(r)
+	data.Quints = quints
+
+	app.render(w, http.StatusOK, "home.tmpl", data)
 }
 
 func (app *application) QuintCreateHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,9 +75,10 @@ func (app *application) QuintGetHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	app.render(w, http.StatusOK, "view.tmpl", &templateData{
-		Quint: quint,
-	})
+	data := app.newTemplateData(r)
+	data.Quint = quint
+
+	app.render(w, http.StatusOK, "view.tmpl", data)
 }
 
 func (app *application) QuintDeleteHandler(w http.ResponseWriter, r *http.Request) {
