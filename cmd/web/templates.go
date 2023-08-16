@@ -3,6 +3,7 @@ package main
 import (
 	"html/template"
 	"path/filepath"
+	"time"
 
 	"github.com/gosmartwizard/quintessence/internal/models"
 )
@@ -11,6 +12,14 @@ type templateData struct {
 	CurrentYear int
 	Quint       *models.Quint
 	Quints      []*models.Quint
+}
+
+func humanDate(t time.Time) string {
+	return t.Format("02 Jan 2006 at 15:04")
+}
+
+var functions = template.FuncMap{
+	"humanDate": humanDate,
 }
 
 func newTemplateCache() (map[string]*template.Template, error) {
@@ -24,7 +33,9 @@ func newTemplateCache() (map[string]*template.Template, error) {
 
 	for _, page := range pages {
 
-		ts, err := template.ParseFiles("./ui/html/base.tmpl")
+		name := filepath.Base(page)
+
+		ts, err := template.New(name).Funcs(functions).ParseFiles("./ui/html/base.tmpl")
 		if err != nil {
 			return nil, err
 		}
@@ -38,8 +49,6 @@ func newTemplateCache() (map[string]*template.Template, error) {
 		if err != nil {
 			return nil, err
 		}
-
-		name := filepath.Base(page)
 
 		cache[name] = ts
 	}
