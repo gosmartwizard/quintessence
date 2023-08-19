@@ -64,6 +64,7 @@ func main() {
 	sessionManager := scs.New()
 	sessionManager.Store = mysqlstore.New(db)
 	sessionManager.Lifetime = 12 * time.Hour
+	sessionManager.Cookie.Secure = true
 
 	app := &application{
 		errorLog:       errorLog,
@@ -83,7 +84,8 @@ func main() {
 
 	infoLog.Printf("Server listening on port %s", cfg.address)
 
-	err = server.ListenAndServe()
+	err = server.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
+
 	errorLog.Fatal(err)
 }
 
