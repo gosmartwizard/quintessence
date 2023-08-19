@@ -12,6 +12,7 @@ type templateData struct {
 	CurrentYear int
 	Quint       *models.Quint
 	Quints      []*models.Quint
+	Form        any
 }
 
 func humanDate(t time.Time) string {
