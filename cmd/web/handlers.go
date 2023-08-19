@@ -69,9 +69,20 @@ func (app *application) QuintCreateHandler(w http.ResponseWriter, r *http.Reques
 
 func (app *application) QuintCreatePostHandler(w http.ResponseWriter, r *http.Request) {
 
-	title := "Sadhguru"
-	content := "Live life in a blissful way"
-	expires := 7
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, "Unable to Parse Form data", http.StatusBadRequest)
+		return
+	}
+
+	title := r.PostForm.Get("title")
+	content := r.PostForm.Get("content")
+
+	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
+	if err != nil {
+		app.clientError(w, "expires is not valid", http.StatusBadRequest)
+		return
+	}
 
 	id, err := app.quints.Insert(title, content, expires)
 	if err != nil {
