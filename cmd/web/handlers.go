@@ -73,30 +73,20 @@ func (app *application) QuintCreateHandler(w http.ResponseWriter, r *http.Reques
 }
 
 type quintCreateForm struct {
-	Title   string
-	Content string
-	Expires int
-	validator.Validator
+	Title               string `form:"title"`
+	Content             string `form:"content"`
+	Expires             int    `form:"expires"`
+	validator.Validator `form:"-"`
 }
 
 func (app *application) QuintCreatePostHandler(w http.ResponseWriter, r *http.Request) {
 
-	err := r.ParseForm()
-	if err != nil {
-		app.clientError(w, "Unable to Parse Form data", http.StatusBadRequest)
-		return
-	}
+	var form quintCreateForm
 
-	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
+	err := app.decodePostForm(r, &form)
 	if err != nil {
-		app.clientError(w, "expires is not valid", http.StatusBadRequest)
+		app.clientError(w, "Unable to decode form", http.StatusBadRequest)
 		return
-	}
-
-	form := quintCreateForm{
-		Title:   r.PostForm.Get("title"),
-		Content: r.PostForm.Get("content"),
-		Expires: expires,
 	}
 
 	form.CheckField(validator.NotBlank(form.Title), "title", "Title field cannot be blank")
@@ -111,7 +101,7 @@ func (app *application) QuintCreatePostHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	id, err := app.quints.Insert(form.Title, form.Content, expires)
+	id, err := app.quints.Insert(form.Title, form.Content, form.Expires)
 	if err != nil {
 		app.serverError(w, err)
 		return
