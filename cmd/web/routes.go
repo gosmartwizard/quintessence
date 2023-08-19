@@ -18,5 +18,5 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("/quint/list", app.QuintListHandler)
 	mux.HandleFunc("/quint/get", app.QuintGetHandler)
 
-	return app.logRequest(secureHeaders(mux))
+	return app.recoverPanic(app.logRequest(secureHeaders(mux)))
 }
