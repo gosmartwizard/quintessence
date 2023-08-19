@@ -13,6 +13,7 @@ type templateData struct {
 	Quint       *models.Quint
 	Quints      []*models.Quint
 	Form        any
+	Flash       string
 }
 
 func humanDate(t time.Time) string {

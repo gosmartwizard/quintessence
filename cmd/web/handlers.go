@@ -107,5 +107,7 @@ func (app *application) QuintCreatePostHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	app.sessionManager.Put(r.Context(), "flash", "Quint created successfully !!!")
+
 	http.Redirect(w, r, fmt.Sprintf("/quint/view/%d", id), http.StatusSeeOther)
 }
