@@ -11,7 +11,7 @@
         </tr>
         {{range .Quints}}
         <tr>
-            <td><a href='/quint/get?id={{.ID}}'>{{.Title}}</a></td>
+            <td><a href='/quint/view/{{.ID}}'>{{.Title}}</a></td>
             <td>{{humanDate .Created}}</td>
             <td>#{{.ID}}</td>
         </tr>

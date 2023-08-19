@@ -7,13 +7,10 @@ import (
 	"strconv"
 
 	"github.com/gosmartwizard/quintessence/internal/models"
+	"github.com/julienschmidt/httprouter"
 )
 
 func (app *application) HomeHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		app.notFound(w)
-		return
-	}
 
 	quints, err := app.quints.Latest()
 	if err != nil {
@@ -27,29 +24,11 @@ func (app *application) HomeHandler(w http.ResponseWriter, r *http.Request) {
 	app.render(w, http.StatusOK, "home.tmpl", data)
 }
 
-func (app *application) QuintCreateHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.Header().Set("Allow", http.MethodPost)
-		http.Error(w, "Method not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
+func (app *application) QuintViewHandler(w http.ResponseWriter, r *http.Request) {
 
-	title := "Qunitessence"
-	content := "Most perfect or typical example of a quality or class"
-	expires := 7
+	params := httprouter.ParamsFromContext(r.Context())
 
-	id, err := app.quints.Insert(title, content, expires)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	http.Redirect(w, r, fmt.Sprintf("/quint/get?id=%d", id), http.StatusSeeOther)
-}
-
-func (app *application) QuintGetHandler(w http.ResponseWriter, r *http.Request) {
-
-	sid := r.URL.Query().Get("id")
+	sid := params.ByName("id")
 	if sid == "" {
 		app.clientError(w, "There is no id in the query", http.StatusBadRequest)
 		return
@@ -59,7 +38,7 @@ func (app *application) QuintGetHandler(w http.ResponseWriter, r *http.Request) 
 		msg := fmt.Sprintf("Failed to convert ID : %v ", sid)
 		http.Error(w, msg, http.StatusInternalServerError)
 		return
-	} else if qid < 0 {
+	} else if qid < 1 {
 		msg := fmt.Sprintf("Not a valid ID : %d ", qid)
 		app.clientError(w, msg, http.StatusBadRequest)
 		return
@@ -81,37 +60,21 @@ func (app *application) QuintGetHandler(w http.ResponseWriter, r *http.Request) 
 	app.render(w, http.StatusOK, "view.tmpl", data)
 }
 
-func (app *application) QuintDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodDelete {
-		w.Header().Set("Allow", http.MethodDelete)
-		app.clientError(w, "Method not supported", http.StatusNotFound)
-		return
-	}
-	w.Write([]byte("Successfully deleted a quint"))
+func (app *application) QuintCreateHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Display the form for creating a new Qunit..."))
 }
 
-func (app *application) QuintListHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		w.Header().Set("Allow", http.MethodGet)
-		app.clientError(w, "Method not supported", http.StatusNotFound)
-		return
-	}
-	quints, err := app.quints.Latest()
+func (app *application) QuintCreatePostHandler(w http.ResponseWriter, r *http.Request) {
+
+	title := "Sadhguru"
+	content := "Live life in a blissful way"
+	expires := 7
+
+	id, err := app.quints.Insert(title, content, expires)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	for _, quint := range quints {
-		fmt.Fprintf(w, "%+v\n", quint)
-	}
-}
-
-func (app *application) QuintUpdateHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPut {
-		w.Header().Set("Allow", http.MethodPut)
-		app.clientError(w, "Method not supported", http.StatusNotFound)
-		return
-	}
-	w.Write([]byte("Successfully updated a quint"))
+	http.Redirect(w, r, fmt.Sprintf("/quint/view/%d", id), http.StatusSeeOther)
 }
