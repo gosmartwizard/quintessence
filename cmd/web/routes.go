@@ -2,7 +2,7 @@ package main
 
 import "net/http"
 
-func (app *application) routes() *http.ServeMux {
+func (app *application) routes() http.Handler {
 
 	mux := http.NewServeMux()
 
@@ -18,5 +18,5 @@ func (app *application) routes() *http.ServeMux {
 	mux.HandleFunc("/quint/list", app.QuintListHandler)
 	mux.HandleFunc("/quint/get", app.QuintGetHandler)
 
-	return mux
+	return secureHeaders(mux)
 }
