@@ -18,10 +18,12 @@ func (app *application) routes() http.Handler {
 	fileserver := http.FileServer(http.Dir(app.staticDir))
 	router.Handler(http.MethodGet, "/static/", http.StripPrefix("/static", fileserver))
 
-	router.HandlerFunc(http.MethodGet, "/", app.HomeHandler)
-	router.HandlerFunc(http.MethodGet, "/quint/view/:id", app.QuintViewHandler)
-	router.HandlerFunc(http.MethodGet, "/quint/create", app.QuintCreateHandler)
-	router.HandlerFunc(http.MethodPost, "/quint/create", app.QuintCreatePostHandler)
+	dynamic := alice.New(app.sessionManager.LoadAndSave)
+
+	router.Handler(http.MethodGet, "/", dynamic.ThenFunc(app.HomeHandler))
+	router.Handler(http.MethodGet, "/quint/view/:id", dynamic.ThenFunc(app.QuintViewHandler))
+	router.Handler(http.MethodGet, "/quint/create", dynamic.ThenFunc(app.QuintCreateHandler))
+	router.Handler(http.MethodPost, "/quint/create", dynamic.ThenFunc(app.QuintCreatePostHandler))
 
 	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 
