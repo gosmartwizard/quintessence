@@ -61,7 +61,10 @@ func (app *application) QuintViewHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (app *application) QuintCreateHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Display the form for creating a new Qunit..."))
+
+	data := app.newTemplateData(r)
+
+	app.render(w, http.StatusOK, "create.tmpl", data)
 }
 
 func (app *application) QuintCreatePostHandler(w http.ResponseWriter, r *http.Request) {
