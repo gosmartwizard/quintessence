@@ -16,9 +16,10 @@ import (
 			   // execute the after logic of middleware
 		   }
 
-		   return http.HandlerFunc(fn
+		   return http.HandlerFunc(fn)
 	   }
 */
+
 func secureHeaders(next http.Handler) http.Handler {
 
 	fn := func(w http.ResponseWriter, r *http.Request) {
@@ -35,6 +36,22 @@ func secureHeaders(next http.Handler) http.Handler {
 		w.Header().Set("X-XSS-Protection", "0")
 
 		next.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(fn)
+}
+
+func (app *application) logRequest(next http.Handler) http.Handler {
+
+	fn := func(w http.ResponseWriter, r *http.Request) {
+
+		app.infoLog.Println("Request Started")
+
+		app.infoLog.Printf("%s - %s %s %s", r.RemoteAddr, r.Proto, r.Method, r.URL.RequestURI())
+
+		next.ServeHTTP(w, r)
+
+		app.infoLog.Println("Request Finished")
 	}
 
 	return http.HandlerFunc(fn)
