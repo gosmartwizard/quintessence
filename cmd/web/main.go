@@ -93,7 +93,9 @@ func main() {
 
 	infoLog.Printf("Server listening on port %s", cfg.address)
 
-	err = server.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
+	//err = server.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
+
+	err = server.ListenAndServe()
 
 	errorLog.Fatal(err)
 }
