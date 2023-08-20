@@ -28,6 +28,7 @@ type application struct {
 	infoLog  *log.Logger
 	config
 	quints         *models.QuintModel
+	users          *models.UserModel
 	templateCache  map[string]*template.Template
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
@@ -72,6 +73,7 @@ func main() {
 		infoLog:        infoLog,
 		config:         cfg,
 		quints:         &models.QuintModel{DB: db},
+		users:          &models.UserModel{DB: db},
 		templateCache:  templateCache,
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
