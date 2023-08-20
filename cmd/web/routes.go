@@ -25,6 +25,12 @@ func (app *application) routes() http.Handler {
 	router.Handler(http.MethodGet, "/quint/create", dynamic.ThenFunc(app.QuintCreateHandler))
 	router.Handler(http.MethodPost, "/quint/create", dynamic.ThenFunc(app.QuintCreatePostHandler))
 
+	router.Handler(http.MethodGet, "/user/signup", dynamic.ThenFunc(app.userSignup))
+	router.Handler(http.MethodPost, "/user/signup", dynamic.ThenFunc(app.userSignupPost))
+	router.Handler(http.MethodGet, "/user/login", dynamic.ThenFunc(app.userLogin))
+	router.Handler(http.MethodPost, "/user/login", dynamic.ThenFunc(app.userLoginPost))
+	router.Handler(http.MethodPost, "/user/logout", dynamic.ThenFunc(app.userLogoutPost))
+
 	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 
 	return standard.Then(router)
