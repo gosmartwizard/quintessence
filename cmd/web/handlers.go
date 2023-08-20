@@ -224,5 +224,23 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Logout the user...")
+	err := app.sessionManager.RenewToken(r.Context())
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	id := app.sessionManager.Get(r.Context(), "authenticatedUserID").(int)
+
+	name, err := app.users.GetUser(int(id))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.sessionManager.Remove(r.Context(), "authenticatedUserID")
+
+	app.sessionManager.Put(r.Context(), "flash", "Bye "+name+" !!! Will see you again !!!")
+
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
