@@ -20,5 +20,9 @@ github.com/julienschmidt/httprouter
 # github.com/justinas/alice v1.2.0
 ## explicit; go 1.12
 github.com/justinas/alice
+# golang.org/x/crypto v0.12.0
+## explicit; go 1.17
+golang.org/x/crypto/bcrypt
+golang.org/x/crypto/blowfish
 # gopkg.in/go-playground/assert.v1 v1.2.1
 ## explicit
