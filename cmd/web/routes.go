@@ -18,7 +18,7 @@ func (app *application) routes() http.Handler {
 	fileserver := http.FileServer(http.Dir(app.staticDir))
 	router.Handler(http.MethodGet, "/static/", http.StripPrefix("/static", fileserver))
 
-	dynamic := alice.New(app.sessionManager.LoadAndSave, noSurf)
+	dynamic := alice.New(app.sessionManager.LoadAndSave, noSurf, app.authenticate)
 
 	router.Handler(http.MethodGet, "/", dynamic.ThenFunc(app.HomeHandler))
 	router.Handler(http.MethodGet, "/quint/view/:id", dynamic.ThenFunc(app.QuintViewHandler))
