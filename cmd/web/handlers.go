@@ -232,7 +232,7 @@ func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 
 	id := app.sessionManager.Get(r.Context(), "authenticatedUserID").(int)
 
-	name, err := app.users.GetUser(int(id))
+	name, err := app.users.GetName(int(id))
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -248,4 +248,23 @@ func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 func (app *application) AboutHandler(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 	app.render(w, http.StatusOK, "about.tmpl", data)
+}
+
+func (app *application) AccountHandler(w http.ResponseWriter, r *http.Request) {
+
+	userID := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+
+	user, err := app.users.Get(userID)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	data := app.newTemplateData(r)
+	data.User = user
+	app.render(w, http.StatusOK, "account.tmpl", data)
 }

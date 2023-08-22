@@ -22,6 +22,14 @@ type UserModel struct {
 	DB *sql.DB
 }
 
+type UserModelInterface interface {
+	Insert(name, email, password string) error
+	Authenticate(email, password string) (int, error)
+	Exists(id int) (bool, error)
+	Get(id int) (*User, error)
+	GetName(id int) (string, error)
+}
+
 func (m *UserModel) Insert(name, email, password string) error {
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
@@ -71,7 +79,7 @@ func (m *UserModel) Authenticate(email, password string) (int, error) {
 	return id, nil
 }
 
-func (m *UserModel) GetUser(id int) (string, error) {
+func (m *UserModel) GetName(id int) (string, error) {
 	var user_name string
 	stmt := "SELECT name FROM users WHERE id = ?"
 	err := m.DB.QueryRow(stmt, id).Scan(&user_name)
@@ -84,6 +92,20 @@ func (m *UserModel) GetUser(id int) (string, error) {
 	}
 
 	return user_name, nil
+}
+
+func (m *UserModel) Get(id int) (*User, error) {
+	var user User
+	stmt := `SELECT id, name, email, created FROM users WHERE id = ?`
+	err := m.DB.QueryRow(stmt, id).Scan(&user.ID, &user.Name, &user.Email, &user.Created)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRecord
+		} else {
+			return nil, err
+		}
+	}
+	return &user, nil
 }
 
 func (m *UserModel) Exists(id int) (bool, error) {
