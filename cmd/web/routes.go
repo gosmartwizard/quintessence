@@ -24,6 +24,7 @@ func (app *application) routes() http.Handler {
 
 	dynamic := alice.New(app.sessionManager.LoadAndSave, noSurf, app.authenticate)
 
+	router.Handler(http.MethodGet, "/about", dynamic.ThenFunc(app.AboutHandler))
 	router.Handler(http.MethodGet, "/", dynamic.ThenFunc(app.HomeHandler))
 	router.Handler(http.MethodGet, "/quint/view/:id", dynamic.ThenFunc(app.QuintViewHandler))
 	router.Handler(http.MethodGet, "/user/signup", dynamic.ThenFunc(app.userSignup))
