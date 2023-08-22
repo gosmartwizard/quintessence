@@ -21,6 +21,7 @@ type config struct {
 	address      string
 	staticDir    string
 	dbConnString string
+	debug        bool
 }
 
 type application struct {
@@ -41,6 +42,7 @@ func main() {
 	flag.StringVar(&cfg.address, "address", ":4949", "HTTP address to connect to")
 	flag.StringVar(&cfg.staticDir, "static-directory", "./ui/static", "Path to static directory")
 	flag.StringVar(&cfg.dbConnString, "db-conn-string", "quint:quint4949@tcp(0.0.0.0:3306)/essencebox?parseTime=true", "MySQL DB connection string")
+	flag.BoolVar(&cfg.debug, "debug", false, "Debug Mode to print debug information")
 
 	flag.Parse()
 
