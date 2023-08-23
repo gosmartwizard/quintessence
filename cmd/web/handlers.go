@@ -330,3 +330,7 @@ func (app *application) accountPasswordUpdatePost(w http.ResponseWriter, r *http
 
 	http.Redirect(w, r, "/account/view", http.StatusSeeOther)
 }
+
+func ping(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("OK"))
+}
