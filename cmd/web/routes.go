@@ -36,8 +36,10 @@ func (app *application) routes() http.Handler {
 
 	router.Handler(http.MethodGet, "/quint/create", protected.ThenFunc(app.QuintCreateHandler))
 	router.Handler(http.MethodPost, "/quint/create", protected.ThenFunc(app.QuintCreatePostHandler))
-	router.Handler(http.MethodPost, "/user/logout", protected.ThenFunc(app.userLogoutPost))
 	router.Handler(http.MethodGet, "/account/view", protected.ThenFunc(app.AccountHandler))
+	router.Handler(http.MethodGet, "/account/password/update", protected.ThenFunc(app.accountPasswordUpdate))
+	router.Handler(http.MethodPost, "/account/password/update", protected.ThenFunc(app.accountPasswordUpdatePost))
+	router.Handler(http.MethodPost, "/user/logout", protected.ThenFunc(app.userLogoutPost))
 
 	standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 
